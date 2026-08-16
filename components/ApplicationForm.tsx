@@ -84,7 +84,7 @@ export default function ApplicationForm() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Honeypot anti-spam — caché visuellement, jamais rempli par un humain */}
-                <div className="absolute -left-[9999px]" aria-hidden="true">
+                <div style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", opacity: 0, pointerEvents: "none", }} aria-hidden="true" >
                   <label htmlFor="site_web">Site web</label>
                   <input
                     id="site_web"

@@ -5,7 +5,7 @@ import crypto from "crypto";
  * Change-la régulièrement (ex: avant chaque campagne de recrutement)
  * pour que le challenge reste inédit et non réutilisable d'une année à l'autre.
  */
-const SECRET_PHRASE = "gr4b_th3_fl4g_eniso_cyberguards_2026";
+const SECRET_PHRASE = "EnisoCyberGuards{You_will_be_called_for_an_interview}"; 
 
 /** Encodage hexadécimal affiché au candidat sur le terminal. */
 export function getEncodedChallenge(): string {
