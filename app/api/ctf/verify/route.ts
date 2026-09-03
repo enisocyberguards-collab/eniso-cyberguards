@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  verifyAnswer,
+  verifyStage1,
   createSolvedToken,
-  CTF_COOKIE_NAME,
-  CTF_COOKIE_MAX_AGE_SECONDS,
+  SESSION_COOKIE_NAME,
+  SOLVED_COOKIE_NAME,
+  SESSION_COOKIE_MAX_AGE_SECONDS,
 } from "@/lib/challenge";
 
 export const runtime = "nodejs";
 
-// Anti brute-force basique en mémoire (par instance serverless).
-// Suffisant pour un CTF de recrutement, pas conçu pour tenir une charge élevée.
 const attempts = new Map<string, { count: number; firstAttempt: number }>();
 const MAX_ATTEMPTS = 15;
 const WINDOW_MS = 10 * 60 * 1000;
@@ -46,19 +45,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Réponse manquante." }, { status: 400 });
   }
 
-  const solved = verifyAnswer(body.answer);
+  const sessionToken = req.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const result = verifyStage1(sessionToken, body.answer);
 
-  if (!solved) {
-    return NextResponse.json({ ok: false, error: "Hash incorrect. Réessaie." }, { status: 200 });
+  if (!result.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Réponse incorrecte. Réessaie." },
+      { status: 200 }
+    );
   }
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(CTF_COOKIE_NAME, createSolvedToken(), {
+
+  response.cookies.set(SESSION_COOKIE_NAME, result.newToken, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
-    maxAge: CTF_COOKIE_MAX_AGE_SECONDS,
+    maxAge: SESSION_COOKIE_MAX_AGE_SECONDS,
     path: "/",
   });
+
+  response.cookies.set(SOLVED_COOKIE_NAME, createSolvedToken(), {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: SESSION_COOKIE_MAX_AGE_SECONDS,
+    path: "/",
+  });
+
   return response;
 }
