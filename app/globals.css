@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  background: #080b16;
+  color: #dbe7ff;
+  min-height: 100%;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1f6f95 #0e1526;
+}
+
+/* Overlay de scanlines CRT, fixe sur toute la page */
+.crt-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+.crt-vignette {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+.scan-beam {
+  pointer-events: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 120px;
+  z-index: 48;
+  background: linear-gradient(to bottom, transparent, rgba(77, 216, 255, 0.045), transparent);
+}
+
+.glow-text {
+  text-shadow: 0 0 6px rgba(77, 216, 255, 0.55), 0 0 22px rgba(77, 216, 255, 0.18);
+}
+
+/* Effet glitch chromatique (cyan/magenta) inspiré du logo ENISo CyberGuards */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  color: #f4f8ff;
+  animation: glitch-shift 5s infinite;
+}
+
+@keyframes glitch-shift {
+  0%, 92%, 100% {
+    text-shadow: -1.5px 0 #ff3d81, 1.5px 0 #4dd8ff;
+  }
+  93% {
+    text-shadow: 2px 0 #ff3d81, -2px 0 #4dd8ff;
+    transform: translateX(-1px);
+  }
+  95% {
+    text-shadow: -2px 0 #ff3d81, 2px 0 #4dd8ff;
+    transform: translateX(1px);
+  }
+  97% {
+    text-shadow: 1px 0 #ff3d81, -1px 0 #4dd8ff;
+    transform: translateX(0);
+  }
+}
+
+.logo-glow {
+  filter: drop-shadow(0 0 12px rgba(77, 216, 255, 0.35));
+}
+
+.terminal-window {
+  background: #0e1526;
+  border: 1px solid #26355c;
+  box-shadow: 0 0 0 1px rgba(77, 216, 255, 0.06), 0 30px 80px -20px rgba(0, 0, 0, 0.85),
+    0 0 40px -12px rgba(77, 216, 255, 0.18);
+}
+
+input:-webkit-autofill,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #0e1526 inset !important;
+  -webkit-text-fill-color: #dbe7ff !important;
+  caret-color: #4dd8ff;
+}
