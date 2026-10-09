@@ -40,7 +40,11 @@ async function embedInPng(message: string) {
       png.data[channel] = (png.data[channel] & 0xfe) | ((byte >> bit) & 1);
     }
   }
-  return `data:image/png;base64,${PNG.sync.write(png).toString("base64")}`;
+  const pngBytes = PNG.sync.write(png);
+  const clue = Buffer.from(message, "utf8").toString("base64");
+  // PNG readers ignore trailing bytes, while `strings` exposes this beginner-friendly clue.
+  const discoverableClue = Buffer.from(`CTF_CLUE_BASE64=${clue}\n`, "utf8");
+  return `data:image/png;base64,${Buffer.concat([pngBytes, discoverableClue]).toString("base64")}`;
 }
 
 export async function generateChallengeSet(): Promise<ChallengeSet> {
