@@ -2,208 +2,42 @@
 
 import { useState } from "react";
 
-type FormState = {
-  nom: string;
-  email: string;
-  filiere: string;
-  motivation: string;
-  site_web: string; // honeypot
-};
-
-const INITIAL_STATE: FormState = {
-  nom: "",
-  email: "",
-  filiere: "",
-  motivation: "",
-  site_web: "",
-};
+type FormState = { nom: string; email: string; telephone: string; filiere: string; pourquoi: string; motivation: string; site_web: string };
+const INITIAL_STATE: FormState = { nom: "", email: "", telephone: "", filiere: "", pourquoi: "", motivation: "", site_web: "" };
 
 export default function ApplicationForm() {
-  const [form, setForm] = useState<FormState>(INITIAL_STATE);
+  const [form, setForm] = useState(INITIAL_STATE);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-
-  function update<K extends keyof FormState>(key: K, value: string) {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }
-
+  const update = (key: keyof FormState, value: string) => setForm((prev) => ({ ...prev, [key]: value }));
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("sending");
-    setErrorMsg("");
-
+    e.preventDefault(); setStatus("sending"); setErrorMsg("");
     try {
-      const res = await fetch("/api/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch("/api/apply", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       const data = await res.json();
-
-      if (!res.ok) {
-        setStatus("error");
-        setErrorMsg(data.error || "Une erreur est survenue.");
-        return;
-      }
-
+      if (!res.ok) { setStatus("error"); setErrorMsg(data.error || "Une erreur est survenue."); return; }
       setStatus("sent");
-    } catch {
-      setStatus("error");
-      setErrorMsg("Erreur réseau. Réessaie dans un instant.");
-    }
+    } catch { setStatus("error"); setErrorMsg("Erreur réseau. Réessaie dans un instant."); }
   }
-
-  return (
-    <main className="min-h-screen flex items-center justify-center px-4 py-16 animate-flicker">
-      <div className="w-full max-w-2xl">
-        <div className="flex flex-col items-center mb-6">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.jpg" alt="ENISo CyberGuards" className="w-20 h-20 rounded-xl logo-glow mb-3" />
+  return <main className="min-h-screen flex items-center justify-center px-4 py-12 sm:py-16">
+    <div className="w-full max-w-3xl">
+      <div className="flex items-center gap-3 mb-6"><img src="/logo.jpg" alt="ENISo CyberGuards" className="size-14 rounded-xl logo-glow" /><div><p className="text-xs text-cyan">ENISo CYBERGUARDS</p><p className="text-xs text-slate-400">canal de recrutement sécurisé</p></div></div>
+      <div className="terminal-window rounded-2xl overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-700 bg-slate-900/70"><span className="size-2.5 rounded-full bg-pink-400" /><span className="size-2.5 rounded-full bg-amber-300" /><span className="size-2.5 rounded-full bg-emerald-400" /><span className="ml-3 text-xs text-slate-400">recruitment / candidate-profile</span></div>
+        <div className="p-6 sm:p-9"><h1 className="glitch-text text-2xl sm:text-3xl font-bold">accès accordé<span className="text-cyan">.</span></h1><p className="text-slate-400 mt-2 mb-7 max-w-xl">Dernière étape : présente-toi à l&apos;équipe. Tes réponses seront transmises à notre cellule recrutement.</p>
+          {status === "sent" ? <div className="rounded-xl border border-cyan/50 bg-cyan/10 p-6 text-cyan">✓ candidature transmise. L&apos;équipe te recontactera bientôt.<span className="animate-blink">_</span></div> : <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
+            <input className="field-input" required placeholder="Nom complet" value={form.nom} onChange={(e) => update("nom", e.target.value)} />
+            <input className="field-input" required type="email" placeholder="Adresse email" value={form.email} onChange={(e) => update("email", e.target.value)} />
+            <input className="field-input" required type="tel" placeholder="Numéro de téléphone" value={form.telephone} onChange={(e) => update("telephone", e.target.value)} />
+            <input className="field-input" required placeholder="Major / Section (Filière)" value={form.filiere} onChange={(e) => update("filiere", e.target.value)} />
+            <textarea className="field-input resize-none sm:col-span-2" required minLength={15} rows={3} placeholder="Pourquoi n&apos;as-tu pas rejoint l&apos;équipe lors du premier appel ?" value={form.pourquoi} onChange={(e) => update("pourquoi", e.target.value)} />
+            <textarea className="field-input resize-none sm:col-span-2" required minLength={20} rows={5} placeholder="Ta motivation pour rejoindre ENISo CyberGuards" value={form.motivation} onChange={(e) => update("motivation", e.target.value)} />
+            <div className="sr-only"><label htmlFor="site_web">Site web</label><input id="site_web" tabIndex={-1} value={form.site_web} onChange={(e) => update("site_web", e.target.value)} /></div>
+            <button className="sm:col-span-2 rounded-lg border border-cyan bg-cyan/10 px-5 py-3 font-bold text-cyan transition hover:bg-cyan hover:text-slate-950 disabled:opacity-50" disabled={status === "sending"}>{status === "sending" ? "transmission en cours..." : "envoyer la candidature →"}</button>
+            {status === "error" && <p className="sm:col-span-2 text-pink-400 text-sm">✕ {errorMsg}</p>}
+          </form>}
         </div>
-
-        <div className="terminal-window rounded-lg overflow-hidden relative">
-          <div className="scan-beam absolute w-full animate-scan" />
-
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-surface-2">
-            <span className="w-3 h-3 rounded-full bg-magenta/70" />
-            <span className="w-3 h-3 rounded-full bg-mint-dim" />
-            <span className="w-3 h-3 rounded-full bg-mint/70" />
-            <span className="ml-3 text-xs text-text-dim">
-              root@eniso-cyberguards:~/candidature
-            </span>
-          </div>
-
-          <div className="p-6 sm:p-8 text-sm">
-            <h1 className="glitch-text text-xl sm:text-2xl font-bold mb-1">
-              ✓ accès accordé
-            </h1>
-            <p className="text-text-dim mb-6">
-              Bienvenue. Remplis ce formulaire pour candidater au club ENISo CyberGuards.
-            </p>
-
-            {status === "sent" ? (
-              <div className="text-mint glow-text">
-                ✓ candidature enregistrée. on te recontacte bientôt
-                <span className="animate-blink">_</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Honeypot anti-spam — totalement invisible, jamais rempli par un humain */}
-                <div
-                  style={{
-                    position: "absolute",
-                    width: 0,
-                    height: 0,
-                    overflow: "hidden",
-                    opacity: 0,
-                    pointerEvents: "none",
-                  }}
-                  aria-hidden="true"
-                >
-                  <label htmlFor="site_web">Site web</label>
-                  <input
-                    id="site_web"
-                    name="site_web"
-                    type="text"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    value={form.site_web}
-                    onChange={(e) => update("site_web", e.target.value)}
-                  />
-                </div>
-
-                <Field label="nom_complet">
-                  <input
-                    required
-                    type="text"
-                    value={form.nom}
-                    onChange={(e) => update("nom", e.target.value)}
-                    placeholder="Ex: Ahmed Ben Salah"
-                    className="field-input"
-                  />
-                </Field>
-
-                <Field label="email">
-                  <input
-                    required
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => update("email", e.target.value)}
-                    placeholder="prenom.nom@eniso.u-sousse.tn"
-                    className="field-input"
-                  />
-                </Field>
-
-                <Field label="filiere">
-                  <input
-                    required
-                    type="text"
-                    value={form.filiere}
-                    onChange={(e) => update("filiere", e.target.value)}
-                    placeholder="Ex: GL2, RT3, IIA1..."
-                    className="field-input"
-                  />
-                </Field>
-
-                <Field label="motivation">
-                  <textarea
-                    required
-                    rows={5}
-                    minLength={20}
-                    value={form.motivation}
-                    onChange={(e) => update("motivation", e.target.value)}
-                    placeholder="Pourquoi veux-tu rejoindre CyberGuards ? Qu'est-ce qui t'intéresse en cybersécurité ?"
-                    className="field-input resize-none"
-                  />
-                </Field>
-
-                <button
-                  type="submit"
-                  disabled={status === "sending"}
-                  className="w-full bg-mint-dim/20 border border-mint text-mint hover:bg-mint hover:text-void transition-colors rounded px-5 py-2.5 font-bold disabled:opacity-50"
-                >
-                  {status === "sending" ? "envoi en cours..." : "envoyer la candidature →"}
-                </button>
-
-                {status === "error" && <p className="text-magenta text-xs">✕ {errorMsg}</p>}
-              </form>
-            )}
-          </div>
-        </div>
-
-        <p className="text-center text-text-dim text-xs mt-4">
-          ENISo CyberGuards CyberSecurity Club — École Nationale d&apos;Ingénieurs de Sousse
-        </p>
-      </div>
-
-      <style jsx global>{`
-        .field-input {
-          width: 100%;
-          background: #0a0f0c;
-          border: 1px solid #1c2b22;
-          border-radius: 0.375rem;
-          padding: 0.5rem 0.75rem;
-          color: #c9e8d4;
-          outline: none;
-        }
-        .field-input:focus {
-          border-color: #4dff9e;
-        }
-        .field-input::placeholder {
-          color: #5f7a6b80;
-        }
-      `}</style>
-    </main>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="block text-text-dim mb-1 text-xs">
-        <span className="text-mint">$</span> {label} =
-      </label>
-      {children}
+      </div><p className="text-center text-xs text-slate-500 mt-4">ENISo CyberGuards — École Nationale d&apos;Ingénieurs de Sousse</p>
     </div>
-  );
+  </main>;
 }
