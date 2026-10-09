@@ -51,7 +51,7 @@ async function embedInPng(message: string) {
   const pngBytes = PNG.sync.write(png);
   const clue = Buffer.from(message, "utf8").toString("base64");
   // PNG readers ignore trailing bytes, while `strings` exposes this beginner-friendly clue.
-  const discoverableClue = Buffer.from(`CTF_CLUE_BASE64=${clue}\n`, "utf8");
+  const discoverableClue = Buffer.from(`\nBEGIN_CTF_CLUE\nCTF_CLUE_BASE64=${clue}\nEND_CTF_CLUE\n`, "utf8");
   return `data:image/png;base64,${Buffer.concat([pngBytes, discoverableClue]).toString("base64")}`;
 }
 
