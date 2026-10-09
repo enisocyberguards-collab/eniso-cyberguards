@@ -19,8 +19,16 @@ export interface ChallengeSet {
   imageDataUrl: string;
 }
 
+const FLAG_MESSAGES = [
+  "welcome to the guard",
+  "protect today secure tomorrow",
+  "every signal matters",
+  "think like a defender",
+  "security starts with curiosity",
+];
+
 function randomSuffix() {
-  return crypto.randomBytes(4).toString("hex");
+  return FLAG_MESSAGES[crypto.randomInt(FLAG_MESSAGES.length)];
 }
 
 function encodeClue(flag: string) {
@@ -93,4 +101,4 @@ export function isValidSolvedToken(token?: string) {
   const [issuedAt, signature] = token.split(".");
   return Boolean(issuedAt && signature && safeEqual(signature, hmac(issuedAt)) && Date.now() - Number(issuedAt) <= SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
 }
-export function expectedFlagPattern() { return /^ECCC\{[a-f0-9]{4}\}$/; }
+export function expectedFlagPattern() { return /^ECCC\{[a-z ]+\}$/; }
