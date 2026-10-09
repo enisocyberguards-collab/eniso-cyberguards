@@ -9,14 +9,14 @@ const jbmono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ENISo CyberGuards — Candidature",
+  title: "ENISo CyberGuards — Application",
   description:
-    "Rejoins le club de cybersécurité de l'ENISo. Dépose ta candidature en quelques secondes.",
+    "Join ENISo's cybersecurity club. Submit your application in just a few seconds.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={jbmono.variable}>
+    <html lang="en" className={jbmono.variable}>
       <body className="font-mono antialiased bg-void">
         <div className="crt-overlay" />
         <div className="crt-vignette" />
