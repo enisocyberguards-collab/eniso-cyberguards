@@ -20,11 +20,11 @@ export interface ChallengeSet {
 }
 
 const FLAG_MESSAGES = [
-  "welcome to the guard",
-  "protect today secure tomorrow",
-  "every signal matters",
-  "think like a defender",
-  "security starts with curiosity",
+  "welcome to the cyberguards",
+  "welcome brave defender",
+  "welcome to the guardian network",
+  "welcome recruit your watch begins",
+  "welcome to the guard signal",
 ];
 
 function randomSuffix() {
