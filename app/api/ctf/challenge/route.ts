@@ -13,7 +13,7 @@ export async function GET() {
     },
   });
   response.cookies.set(SESSION_COOKIE_NAME, createSessionToken(challenge.flagPlain), {
-    httpOnly: true, secure: true, sameSite: "lax", maxAge: SESSION_COOKIE_MAX_AGE_SECONDS, path: "/",
+    httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: SESSION_COOKIE_MAX_AGE_SECONDS, path: "/",
   });
   return response;
 }
