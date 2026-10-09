@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root { color-scheme: dark; }
-html, body { background: #070b16; color: #dbe7ff; min-height: 100%; }
+html, body { background: #070b16; color: #dbe7ff; min-height: 100%; } body { background-image: radial-gradient(circle at 15% 10%, rgba(77,216,255,.09), transparent 28rem), radial-gradient(circle at 90% 85%, rgba(255,61,129,.07), transparent 26rem), linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px); background-size: auto, auto, 44px 44px, 44px 44px; }
 * { scrollbar-width: thin; scrollbar-color: #245878 #0b1222; }
 .crt-overlay { pointer-events: none; position: fixed; inset: 0; z-index: 50; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 1px, rgba(0,0,0,.14) 2px, rgba(0,0,0,.14) 3px); mix-blend-mode: multiply; }
 .crt-vignette { pointer-events: none; position: fixed; inset: 0; z-index: 49; background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.65) 100%); }
@@ -11,7 +11,7 @@ html, body { background: #070b16; color: #dbe7ff; min-height: 100%; }
 .glitch-text { color: #f4f8ff; animation: glitch-shift 5s infinite; }
 @keyframes glitch-shift { 0%,92%,100% { text-shadow: -1.5px 0 #ff3d81, 1.5px 0 #4dd8ff; } 93% { text-shadow: 2px 0 #ff3d81, -2px 0 #4dd8ff; transform: translateX(-1px); } 95% { text-shadow: -2px 0 #ff3d81, 2px 0 #4dd8ff; transform: translateX(1px); } 97% { text-shadow: 1px 0 #ff3d81, -1px 0 #4dd8ff; transform: translateX(0); } }
 .logo-glow { filter: drop-shadow(0 0 12px rgba(77,216,255,.35)); }
-.terminal-window { background: rgba(14,21,38,.92); border: 1px solid #26355c; box-shadow: 0 0 0 1px rgba(77,216,255,.06), 0 30px 80px -20px rgba(0,0,0,.85), 0 0 40px -12px rgba(77,216,255,.18); }
+.terminal-window { background: linear-gradient(145deg, rgba(17,27,50,.96), rgba(9,15,29,.96)); border: 1px solid #2d416d; box-shadow: 0 0 0 1px rgba(77,216,255,.06), 0 30px 80px -20px rgba(0,0,0,.85), 0 0 55px -12px rgba(77,216,255,.2); }
 .field-input { width: 100%; border: 1px solid #26355c; border-radius: .55rem; background: rgba(7,11,22,.8); padding: .75rem .9rem; color: #dbe7ff; outline: none; transition: border-color .2s, box-shadow .2s; }
 .field-input:focus { border-color: #4dd8ff; box-shadow: 0 0 0 3px rgba(77,216,255,.1); }
 .field-input::placeholder { color: #71809b; }
