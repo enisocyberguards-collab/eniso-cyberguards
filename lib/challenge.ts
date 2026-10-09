@@ -1,9 +1,10 @@
 import crypto from "crypto";
+import fs from "fs/promises";
+import path from "path";
 import { PNG } from "pngjs";
 
 const FLAG_PREFIX = "ECCC{";
 const FLAG_SUFFIX = "}";
-const CHALLENGE_IMAGE_URL = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-PzJlUu9doseSX5e3nfpHLjMOkVKjPz.png";
 export const CHALLENGE_START_AT = new Date("2026-10-10T10:00:00+01:00").getTime();
 export const CHALLENGE_END_AT = new Date("2026-10-12T10:00:00+01:00").getTime();
 
@@ -14,18 +15,21 @@ export function isChallengeWindowOpen(_now = Date.now()) {
 
 export interface ChallengeSet {
   flagPlain: string;
+  encodedClue: string;
   imageDataUrl: string;
 }
 
 function randomSuffix() {
-  // Keep the answer stable for the event while requiring a little image analysis.
-  return "cafe";
+  return crypto.randomBytes(4).toString("hex");
+}
+
+function encodeClue(flag: string) {
+  return Buffer.from(flag, "utf8").toString("base64");
 }
 
 async function embedInPng(message: string) {
-  const response = await fetch(CHALLENGE_IMAGE_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error("Unable to load challenge image");
-  const png = PNG.sync.read(Buffer.from(await response.arrayBuffer()));
+  const imagePath = path.join(process.cwd(), "public", "challenge-image.png");
+  const png = PNG.sync.read(await fs.readFile(imagePath));
   const bits = Buffer.from(message, "utf8");
   const payload = Buffer.concat([Buffer.from([bits.length >> 8, bits.length & 255]), bits]);
   let bitIndex = 0;
@@ -41,7 +45,7 @@ async function embedInPng(message: string) {
 
 export async function generateChallengeSet(): Promise<ChallengeSet> {
   const flagPlain = `${FLAG_PREFIX}${randomSuffix()}${FLAG_SUFFIX}`;
-  return { flagPlain, imageDataUrl: await embedInPng(flagPlain) };
+  return { flagPlain, encodedClue: encodeClue(flagPlain), imageDataUrl: await embedInPng(flagPlain) };
 }
 
 function getSecret() {
