@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 const START_AT = new Date("2026-10-10T10:00:00+01:00").getTime();
 const END_AT = new Date("2026-10-12T10:00:00+01:00").getTime();
 const BOOT_LINES = ["initializing secure gateway...", "checking CTF protocol... [ok]", "recruitment channel open... [ok]"];
-function remaining() { const ms = Math.max(0, START_AT - Date.now()); return { days: Math.floor(ms / 86400000), hours: Math.floor(ms / 3600000) % 24, minutes: Math.floor(ms / 60000) % 60, seconds: Math.floor(ms / 1000) % 60 }; }
+function remaining() { const ms = Math.max(0, END_AT - Date.now()); return { days: Math.floor(ms / 86400000), hours: Math.floor(ms / 3600000) % 24, minutes: Math.floor(ms / 60000) % 60, seconds: Math.floor(ms / 1000) % 60 }; }
 const INITIAL_TIME = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 export default function GatePage() {
   const router = useRouter(); const [lines, setLines] = useState<string[]>([]); const [image, setImage] = useState<string>("/challenge-image.png"); const [answer, setAnswer] = useState(""); const [error, setError] = useState(""); const [checking, setChecking] = useState(false); const [solved, setSolved] = useState(false); const [hint, setHint] = useState(false); const [time, setTime] = useState(INITIAL_TIME);
@@ -20,5 +20,5 @@ export default function GatePage() {
       <div className="mt-7 rounded-xl border border-slate-700 bg-slate-950/70 p-3 sm:p-4"><p className="text-xs text-slate-500 mb-3">// artefact_01.png · local analysis recommended</p>{image ? <img src={image} alt="Steganography challenge image" className="w-full rounded-lg border border-slate-800" /> : <div className="aspect-video animate-pulse rounded-lg bg-slate-900" />}</div>
       <div className="mt-5 text-sm text-slate-400"><p>The flag follows the format <code className="text-cyan">ECCC&#123;...&#125;</code>. The clue is hidden inside the image.</p><button type="button" className="mt-3 text-xs text-cyan underline underline-offset-4" onClick={() => setHint(!hint)}>{hint ? "hide hint" : "show hint"}</button>{hint && <p className="mt-2 border-l-2 border-cyan pl-3 text-xs text-slate-500">A picture can whisper what it does not show.</p>}</div>
       <form onSubmit={submit} className="mt-6 flex flex-col sm:flex-row gap-3"><input value={answer} onChange={(e) => setAnswer(e.target.value)} className="field-input flex-1" placeholder="ECCC{...}" autoComplete="off" spellCheck={false} /><button disabled={checking || solved} className="rounded-lg border border-cyan bg-cyan/10 px-5 py-3 font-bold text-cyan transition hover:bg-cyan hover:text-slate-950 disabled:opacity-50">{solved ? "access granted ✓" : checking ? "checking..." : "unlock →"}</button></form>{error && <p className="mt-3 text-sm text-pink-400">✕ {error}</p>}
-    </div></section><p className="text-center text-xs text-slate-500 mt-4">active from October 10, 10:00 · challenge is live</p></div></main>;
+    </div></section><p className="text-center text-xs text-slate-500 mt-4">countdown to October 12, 10:00 · challenge is live</p></div></main>;
 }
