@@ -19,17 +19,26 @@ export interface ChallengeSet {
   imageDataUrl: string;
 }
 
-const FLAG_MESSAGES = [
-  "welcome guardian your watch begins",
-  "welcome defender the signal chose you",
-  "welcome to the guard protect what matters",
-  "welcome brave mind the network is yours",
-  "welcome recruit your first signal is found",
-  "welcome guardian courage is your strongest key",
+const WELCOME_FLAG = "welcome to cyberguards";
+const MUTABLE_LETTERS = [
+  { index: 13, letters: "abcde" },
+  { index: 14, letters: "fghij" },
+  { index: 16, letters: "klmno" },
+  { index: 18, letters: "pqrst" },
+  { index: 19, letters: "uvwxy" },
 ];
 
 function randomSuffix() {
-  return FLAG_MESSAGES[crypto.randomInt(FLAG_MESSAGES.length)];
+  const characters = WELCOME_FLAG.split("");
+  const selected = new Set<number>();
+  const changes = 2 + crypto.randomInt(2);
+  while (selected.size < changes) selected.add(crypto.randomInt(MUTABLE_LETTERS.length));
+  for (const position of selected) {
+    const mutation = MUTABLE_LETTERS[position];
+    const options = mutation.letters.split("").filter((letter) => letter !== WELCOME_FLAG[mutation.index]);
+    characters[mutation.index] = options[crypto.randomInt(options.length)];
+  }
+  return characters.join("");
 }
 
 function encodeClue(flag: string) {
