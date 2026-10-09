@@ -18,26 +18,15 @@ export interface ChallengeSet {
 }
 
 function randomSuffix() {
-  // Keep the flag discoverable for the event while still requiring image analysis.
+  // Keep the answer stable for the event while requiring a little image analysis.
   return "cafe";
-}
-
-const STEGO_KEY = Buffer.from("second-call");
-
-function encodePayload(message: string) {
-  const source = Buffer.from(message, "utf8");
-  const obfuscated = Buffer.alloc(source.length);
-  for (let i = 0; i < source.length; i += 1) {
-    obfuscated[i] = source[i] ^ STEGO_KEY[i % STEGO_KEY.length];
-  }
-  return Buffer.from(obfuscated.toString("base64"), "utf8");
 }
 
 async function embedInPng(message: string) {
   const response = await fetch(CHALLENGE_IMAGE_URL, { cache: "no-store" });
   if (!response.ok) throw new Error("Unable to load challenge image");
   const png = PNG.sync.read(Buffer.from(await response.arrayBuffer()));
-  const bits = encodePayload(message);
+  const bits = Buffer.from(message, "utf8");
   const payload = Buffer.concat([Buffer.from([bits.length >> 8, bits.length & 255]), bits]);
   let bitIndex = 0;
   for (const byte of payload) {
