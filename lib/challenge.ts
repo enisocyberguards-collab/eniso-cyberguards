@@ -3,6 +3,13 @@ import { PNG } from "pngjs";
 
 const FLAG_PREFIX = 'ECCC{ssh root@cyberguards "welcome_';
 const FLAG_SUFFIX = '"}';
+const CHALLENGE_IMAGE_URL = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-PzJlUu9doseSX5e3nfpHLjMOkVKjPz.png";
+export const CHALLENGE_START_AT = new Date("2026-10-10T10:00:00+01:00").getTime();
+export const CHALLENGE_END_AT = new Date("2026-10-12T10:00:00+01:00").getTime();
+
+export function isChallengeWindowOpen(now = Date.now()) {
+  return now >= CHALLENGE_START_AT && now < CHALLENGE_END_AT;
+}
 
 export interface ChallengeSet {
   flagPlain: string;
@@ -24,20 +31,10 @@ function encodePayload(message: string) {
   return Buffer.from(obfuscated.toString("base64"), "utf8");
 }
 
-function embedInPng(message: string) {
-  const width = 640;
-  const height = 360;
-  const png = new PNG({ width, height });
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      const i = (width * y + x) << 2;
-      const wave = Math.sin(x / 23) * 12 + Math.cos(y / 17) * 10;
-      png.data[i] = Math.max(0, Math.min(255, 10 + x / 18 + wave));
-      png.data[i + 1] = Math.max(0, Math.min(255, 26 + y / 8 + wave));
-      png.data[i + 2] = Math.max(0, Math.min(255, 48 + (x + y) / 9 + wave));
-      png.data[i + 3] = 255;
-    }
-  }
+async function embedInPng(message: string) {
+  const response = await fetch(CHALLENGE_IMAGE_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error("Unable to load challenge image");
+  const png = PNG.sync.read(Buffer.from(await response.arrayBuffer()));
   const bits = encodePayload(message);
   const payload = Buffer.concat([Buffer.from([bits.length >> 8, bits.length & 255]), bits]);
   let bitIndex = 0;
@@ -51,9 +48,9 @@ function embedInPng(message: string) {
   return `data:image/png;base64,${PNG.sync.write(png).toString("base64")}`;
 }
 
-export function generateChallengeSet(): ChallengeSet {
+export async function generateChallengeSet(): Promise<ChallengeSet> {
   const flagPlain = `${FLAG_PREFIX}${randomSuffix()}${FLAG_SUFFIX}`;
-  return { flagPlain, imageDataUrl: embedInPng(flagPlain) };
+  return { flagPlain, imageDataUrl: await embedInPng(flagPlain) };
 }
 
 function getSecret() {

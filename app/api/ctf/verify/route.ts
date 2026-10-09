@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSolvedToken, SESSION_COOKIE_NAME, SOLVED_COOKIE_NAME, SESSION_COOKIE_MAX_AGE_SECONDS, verifyFlag } from "@/lib/challenge";
+import { createSolvedToken, isChallengeWindowOpen, SESSION_COOKIE_NAME, SOLVED_COOKIE_NAME, SESSION_COOKIE_MAX_AGE_SECONDS, verifyFlag } from "@/lib/challenge";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  if (!isChallengeWindowOpen()) return NextResponse.json({ ok: false, error: "The challenge window is closed." }, { status: 403 });
   let body: { answer?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request." }, { status: 400 }); }
   if (!body.answer || typeof body.answer !== "string") return NextResponse.json({ error: "Flag manquant." }, { status: 400 });
