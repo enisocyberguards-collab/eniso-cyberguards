@@ -20,23 +20,22 @@ export interface ChallengeSet {
 }
 
 const WELCOME_FLAG = "welcome to cyberguards";
-const MUTABLE_LETTERS = [
-  { index: 13, letters: "abcde" },
-  { index: 14, letters: "fghij" },
-  { index: 16, letters: "klmno" },
-  { index: 18, letters: "pqrst" },
-  { index: 19, letters: "uvwxy" },
-];
+const LEET_SUBSTITUTIONS: Record<string, string> = { e: "3", o: "0", a: "4" };
 
 function randomSuffix() {
   const characters = WELCOME_FLAG.split("");
-  const selected = new Set<number>();
-  const changes = 2 + crypto.randomInt(2);
-  while (selected.size < changes) selected.add(crypto.randomInt(MUTABLE_LETTERS.length));
-  for (const position of selected) {
-    const mutation = MUTABLE_LETTERS[position];
-    const options = mutation.letters.split("").filter((letter) => letter !== WELCOME_FLAG[mutation.index]);
-    characters[mutation.index] = options[crypto.randomInt(options.length)];
+  let changed = false;
+  for (let index = 0; index < characters.length; index += 1) {
+    const replacement = LEET_SUBSTITUTIONS[characters[index]];
+    if (replacement && crypto.randomInt(2) === 1) {
+      characters[index] = replacement;
+      changed = true;
+    }
+  }
+  if (!changed) {
+    const eligible = Object.keys(LEET_SUBSTITUTIONS).filter((letter) => WELCOME_FLAG.includes(letter));
+    const letter = eligible[crypto.randomInt(eligible.length)];
+    characters[WELCOME_FLAG.indexOf(letter)] = LEET_SUBSTITUTIONS[letter];
   }
   return characters.join("");
 }
@@ -111,4 +110,4 @@ export function isValidSolvedToken(token?: string) {
   const [issuedAt, signature] = token.split(".");
   return Boolean(issuedAt && signature && safeEqual(signature, hmac(issuedAt)) && Date.now() - Number(issuedAt) <= SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
 }
-export function expectedFlagPattern() { return /^ECCC\{[a-z ]+\}$/; }
+export function expectedFlagPattern() { return /^ECCC\{[a-z0-9 ]+\}$/; }
