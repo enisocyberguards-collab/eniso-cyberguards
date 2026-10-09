@@ -13,6 +13,17 @@ function randomSuffix() {
   return crypto.randomBytes(2).toString("hex").slice(0, 4);
 }
 
+const STEGO_KEY = Buffer.from("second-call");
+
+function encodePayload(message: string) {
+  const source = Buffer.from(message, "utf8");
+  const obfuscated = Buffer.alloc(source.length);
+  for (let i = 0; i < source.length; i += 1) {
+    obfuscated[i] = source[i] ^ STEGO_KEY[i % STEGO_KEY.length];
+  }
+  return Buffer.from(obfuscated.toString("base64"), "utf8");
+}
+
 function embedInPng(message: string) {
   const width = 640;
   const height = 360;
@@ -27,7 +38,7 @@ function embedInPng(message: string) {
       png.data[i + 3] = 255;
     }
   }
-  const bits = Buffer.from(message, "utf8");
+  const bits = encodePayload(message);
   const payload = Buffer.concat([Buffer.from([bits.length >> 8, bits.length & 255]), bits]);
   let bitIndex = 0;
   for (const byte of payload) {
