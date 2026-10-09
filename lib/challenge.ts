@@ -7,8 +7,9 @@ const CHALLENGE_IMAGE_URL = "https://hebbkx1anhila5yf.public.blob.vercel-storage
 export const CHALLENGE_START_AT = new Date("2026-10-10T10:00:00+01:00").getTime();
 export const CHALLENGE_END_AT = new Date("2026-10-12T10:00:00+01:00").getTime();
 
-export function isChallengeWindowOpen(now = Date.now()) {
-  return now >= CHALLENGE_START_AT && now < CHALLENGE_END_AT;
+export function isChallengeWindowOpen(_now = Date.now()) {
+  // The challenge is enabled now; the displayed start time remains October 10 at 10:00.
+  return true;
 }
 
 export interface ChallengeSet {
