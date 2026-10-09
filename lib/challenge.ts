@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import { PNG } from "pngjs";
 
-const FLAG_PREFIX = 'ECCC{ssh root@cyberguards "welcome_';
-const FLAG_SUFFIX = '"}';
+const FLAG_PREFIX = "ECCC{";
+const FLAG_SUFFIX = "}";
 const CHALLENGE_IMAGE_URL = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-PzJlUu9doseSX5e3nfpHLjMOkVKjPz.png";
 export const CHALLENGE_START_AT = new Date("2026-10-10T10:00:00+01:00").getTime();
 export const CHALLENGE_END_AT = new Date("2026-10-12T10:00:00+01:00").getTime();
@@ -94,4 +94,4 @@ export function isValidSolvedToken(token?: string) {
   const [issuedAt, signature] = token.split(".");
   return Boolean(issuedAt && signature && safeEqual(signature, hmac(issuedAt)) && Date.now() - Number(issuedAt) <= SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
 }
-export function expectedFlagPattern() { return /^ECCC\{ssh root@cyberguards "welcome_[a-f0-9]{4}"\}$/; }
+export function expectedFlagPattern() { return /^ECCC\{[a-f0-9]{4}\}$/; }
