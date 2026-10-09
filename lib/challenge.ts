@@ -18,7 +18,8 @@ export interface ChallengeSet {
 }
 
 function randomSuffix() {
-  return crypto.randomBytes(2).toString("hex").slice(0, 4);
+  // Keep the flag discoverable for the event while still requiring image analysis.
+  return "cafe";
 }
 
 const STEGO_KEY = Buffer.from("second-call");
