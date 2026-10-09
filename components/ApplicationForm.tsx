@@ -32,7 +32,6 @@ export default function ApplicationForm() {
             <input className="field-input" required placeholder="Major / Section" value={form.filiere} onChange={(e) => update("filiere", e.target.value)} />
             <textarea className="field-input resize-none sm:col-span-2" required minLength={15} rows={3} placeholder="Why didn&apos;t you join the team during the first call?" value={form.pourquoi} onChange={(e) => update("pourquoi", e.target.value)} />
             <textarea className="field-input resize-none sm:col-span-2" required minLength={20} rows={5} placeholder="Why do you want to join ENISo CyberGuards?" value={form.motivation} onChange={(e) => update("motivation", e.target.value)} />
-            <div className="sr-only"><label htmlFor="site_web">Site web</label><input id="site_web" tabIndex={-1} value={form.site_web} onChange={(e) => update("site_web", e.target.value)} /></div>
             <button className="sm:col-span-2 rounded-lg border border-cyan bg-cyan/10 px-5 py-3 font-bold text-cyan transition hover:bg-cyan hover:text-slate-950 disabled:opacity-50" disabled={status === "sending"}>{status === "sending" ? "submitting..." : "submit application →"}</button>
             {status === "error" && <p className="sm:col-span-2 text-pink-400 text-sm">✕ {errorMsg}</p>}
           </form>}
